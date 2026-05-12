@@ -1,6 +1,6 @@
 {
   "name": "@cap-ts/esi",
-  "version": "1.8.7",
+  "version": "1.8.6",
   "description": "Enterprise System Integration Based on SAP CAP",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -54,7 +54,7 @@
     "patch": "npm version patch",
     "minor": "npm version minor",
     "major": "npm version major",
-    "publish": "npm publish --access public",
+    "deploy": "npm publish --access public",
     "deprecate": "node build/process.js --deprecate",
     "unpublish": "node build/process.js --unpublish"
   },
