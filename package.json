@@ -1,6 +1,6 @@
 {
   "name": "@cap-ts/esi",
-  "version": "1.8.5",
+  "version": "1.8.6",
   "description": "Enterprise System Integration Based on SAP CAP",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -8,7 +8,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SAP-code-world/@cap-ts/esi.git"
+    "url": "git+https://github.com/cap-ts/esi.git"
   },
   "keywords": [
     "SAP",
@@ -54,6 +54,7 @@
     "patch": "npm version patch",
     "minor": "npm version minor",
     "major": "npm version major",
+    "publish": "npm publish --access public",
     "deprecate": "node build/process.js --deprecate",
     "unpublish": "node build/process.js --unpublish"
   },
@@ -62,7 +63,7 @@
     "types"
   ],
   "bugs": {
-    "url": "https://github.com/SAP-code-world/esi-cap/issues"
+    "url": "https://github.com/cap-ts/esi/issues"
   },
-  "homepage": "https://github.com/SAP-code-world/esi-cap#readme"
+  "homepage": "https://github.com/cap-ts/esi#readme"
 }

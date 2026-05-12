@@ -1,14 +1,14 @@
 
-[![Version npm](https://img.shields.io/npm/v/esi-cap.svg)](https://www.npmjs.com/package/esi-cap)
+[![Version npm](https://img.shields.io/npm/v/@cap-ts/esi.svg)](https://www.npmjs.com/package/@cap-ts/esi)
 
-# ESI-CAP
+# @cap-ts/esi
 **Remote Service Integration for SAP CAP Applications (Node.js)**
 
 ## 📦 About
 
-`esi-cap` is an API package for **Enterprise System Integration** based on [SAP CAP (SAP Cloud Application Programming Model)](https://cap.cloud.sap/docs/). It streamlines communication with remote systems and natively supports service associations — out of the box, with minimal configuration.
+`@cap-ts/esi` is an API package for **Enterprise System Integration** based on [SAP CAP (SAP Cloud Application Programming Model)](https://cap.cloud.sap/docs/). It streamlines communication with remote systems and natively supports service associations — out of the box, with minimal configuration.
 
-Refer to the [official documentation](https://github.com/SAP-code-world/esi-cap/wiki) to get started.
+Refer to the [official documentation](https://github.com/cap-ts/esi/wiki) to get started.
 
 ## 🧰 Requirements & Setup
 
@@ -21,14 +21,14 @@ Additional documentation pages will be added soon.
 The package is available on npm and can be installed as follows:
 
 ```bash
-npm install esi-cap@latest
+npm install @cap-ts/esi@latest
 ```
 
 ## 🛠️ Support & Feedback
 
 We welcome your feedback, feature requests, and bug reports!
 
-Submit an issue via our [GitHub Issues Tracker](https://github.com/SAP-code-world/esi-cap/issues). Community feedback are appreciated and help shape the project’s evolution.
+Submit an issue via our [GitHub Issues Tracker](https://github.com/cap-ts/esi/issues). Community feedback are appreciated and help shape the project’s evolution.
 
 ## 📄 License
 
