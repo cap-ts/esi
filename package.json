@@ -1,0 +1,68 @@
+{
+  "name": "@cap-ts/esi",
+  "version": "1.8.5",
+  "description": "Enterprise System Integration Based on SAP CAP",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "author": "SAP-Code-World",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SAP-code-world/@cap-ts/esi.git"
+  },
+  "keywords": [
+    "SAP",
+    "CAP",
+    "Remote",
+    "Service",
+    "Integration"
+  ],
+  "dependencies": {
+    "@sap-cloud-sdk/connectivity": ">=4",
+    "@sap-cloud-sdk/http-client": ">=4",
+    "deasync": "^0.1.30",
+    "express": ">=5",
+    "fs-extra": "^11.3.0",
+    "https": ">=1",
+    "lodash": "^4.17.21",
+    "log4js": ">=6.9",
+    "minimist": "^1.2.8",
+    "soap": ">=1",
+    "uuid": "^11.1.0",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "cross-var": "^1.1.0",
+    "javascript-obfuscator": "^4.1.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3",
+    "uglify-js": "^3.19.3"
+  },
+  "scripts": {
+    "compile:types": "tsc",
+    "compile:main": "node build/index.js",
+    "clean": "rimraf ./.types",
+    "pull": "git submodule update --init --recursive --remote",
+    "build": "npm run compile:main && npm run compile:types && npm run clean",
+    "config": "node build/index.js --config",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run pull",
+    "prepare": "npm run build",
+    "postpublish": "node build/postpublish.js",
+    "gitonly": "npm run prepublishOnly && npm run prepare && npm run postpublish",
+    "gitbuild": "npm run prepare && npm run postpublish",
+    "patch": "npm version patch",
+    "minor": "npm version minor",
+    "major": "npm version major",
+    "deprecate": "node build/process.js --deprecate",
+    "unpublish": "node build/process.js --unpublish"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "bugs": {
+    "url": "https://github.com/SAP-code-world/esi-cap/issues"
+  },
+  "homepage": "https://github.com/SAP-code-world/esi-cap#readme"
+}
