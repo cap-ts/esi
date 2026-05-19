@@ -162,6 +162,9 @@ export type CDSTarget = {
 export type CDSReject = (opts?: {
     status?: number;
     message?: string;
+    code?: string;
+    target?: string;
+    args?: any[];
 }) => void;
 export type CDSError = (opts: {
     status?: number;
@@ -249,7 +252,7 @@ export type ServieEventsRequestHandler = Partial<Record<ServiceEventsKey, Servic
  */
 /**
  * @callback CDSReject
- * @param {{ status?: number; message?: string }} [opts]
+ * @param {{ status?: number; message?: string; code?: string; target?: string; args?: any[] }} [opts]
  * @returns {void}
  */
 /**
