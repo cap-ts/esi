@@ -8,6 +8,7 @@ export namespace query {
     }
     namespace SELECT {
         namespace columns {
+            function has(oRequest: Request, sPropertyName: string): boolean;
             function get(oColumns: any): any;
             function parse(oQueryString: any, oKeyFields: any): {
                 ref: any[];
@@ -31,11 +32,13 @@ export namespace query {
             };
         }
         namespace where {
-            function _toANDArray(oWhereClause: any, bAlwwaysArray?: boolean): any[];
-            function toANDArray(oWhereClause: any, bAlwwaysArray?: boolean): any[];
-            function convert(oIDWhere: object, oIDColumns: object, fConvertLogic?: Function): any[];
-            function add(oRequest: Request, oWhereClause: any[]): void;
-            function apply(oData: any, oWhereClause: any): any;
+            export function _toANDArray(oWhereClause: any, bAlwwaysArray?: boolean): any[];
+            export function toANDArray(oWhereClause: any, bAlwwaysArray?: boolean): any[];
+            export function convert(oIDWhere: object, oIDColumns: object, fConvertLogic?: Function): any[];
+            export function add(oRequest: Request, oWhereClause: any[]): void;
+            export function apply(oData: any, oWhereClause: any): any;
+            export function has_1(oRequest: Request, sPropertyName: string): boolean;
+            export { has_1 as has };
         }
     }
 }
