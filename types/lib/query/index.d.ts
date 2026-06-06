@@ -103,6 +103,7 @@ export namespace query {
             export function has_1(oRequest: Request, sPropertyName: string, sAssociationName?: string): boolean;
             export { has_1 as has };
         }
+        function getForAssociation(oRequest: Request, sAssociationName: string): ColumnRef | undefined;
     }
 }
 //# sourceMappingURL=index.d.ts.map
