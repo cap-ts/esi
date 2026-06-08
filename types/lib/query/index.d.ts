@@ -102,6 +102,8 @@ export namespace query {
             export function apply(oData: any[], oWhereClause: any[]): any[];
             export function has_1(oRequest: Request, sPropertyName: string, sAssociationName?: string): boolean;
             export { has_1 as has };
+            export function replaceAt(oRequest: Request, sPropertyName: string, oNewCondition: any[], sAssociationName?: string): void;
+            export function appendFilterValuesAt(oRequest: Request, sPropertyName: string, oPadConfig?: any, oValues?: any[], sAssociationName?: string): void;
         }
         function getForAssociation(oRequest: Request, sAssociationName: string): ColumnRef | undefined;
     }
