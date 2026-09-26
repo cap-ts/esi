@@ -32,35 +32,8 @@
   },
   "peerDependencies": {
     "@cap-ts/remote-service-adapter": ">=0.0.3",
-    "@cap-ts/soap-adapter": "0.1.11",
+    "@cap-ts/soap-adapter": "^0.1.11",
     "@sap/cds": "^9.9.1"
-  },
-  "devDependencies": {
-    "@sap/cds": "^9.9.1",
-    "javascript-obfuscator": "^4.1.1",
-    "minimist": "^1.2.8",
-    "uglify-js": "^3.19.3",
-    "typescript": "^5.8.3"
-  },
-  "scripts": {
-    "compile:types": "tsc",
-    "compile:main": "node build/index.js",
-    "clean": "node -e \"require('fs').rmSync('.types',{recursive:true,force:true})\"",
-    "pull": "git submodule update --init --recursive --remote",
-    "build": "npm run compile:main && npm run compile:types && npm run clean",
-    "config": "node build/index.js --config",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublishOnly": "npm run pull",
-    "prepare": "npm run build",
-    "postpublish": "node build/postpublish.js",
-    "gitonly": "npm run prepublishOnly && npm run prepare && npm run postpublish",
-    "gitbuild": "npm run prepare && npm run postpublish",
-    "patch": "npm version patch",
-    "minor": "npm version minor",
-    "major": "npm version major",
-    "deploy": "npm publish --access public",
-    "deprecate": "node build/process.js --deprecate",
-    "unpublish": "node build/process.js --unpublish"
   },
   "files": [
     "dist",

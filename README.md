@@ -8,13 +8,13 @@
 
 `@cap-ts/esi` is an API package for **Enterprise System Integration** based on [SAP CAP (SAP Cloud Application Programming Model)](https://cap.cloud.sap/docs/). It streamlines communication with remote systems and natively supports service associations — out of the box, with minimal configuration.
 
-> ⚠️ **Deprecation notice**
+> ⚠️ **Critical upgrade required**
 >
-> **Important: Upgrade to version 1.9 or higher**
+> **Important: Upgrade to version 1.9 or higher immediately**
 >
-> Please upgrade to version **1.9 or later** to benefit from improved performance and the latest enhancements.
+> A critical fix is included only in version **1.9** and later. Versions below **1.9** will not work correctly and are no longer supported.
 >
-> Versions below **1.9** will be marked as **deprecated/obsolete/retired soon** and may no longer receive updates or support.
+> Please upgrade to version **1.9** as soon as possible to ensure proper functionality and continued support.
 
 Refer to the [official documentation](https://github.com/cap-ts/esi/wiki) to get started.
 
