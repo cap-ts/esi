@@ -12,7 +12,7 @@ Refer to the [official documentation](https://github.com/cap-ts/esi/wiki) to get
 
 ## 🧰 Requirements & Setup
 
-Explore our [sample application](https://github.com/SAP-code-world/esi-cap_samples) for a practical implementation of this package. It demonstrates integration patterns, service bindings, and setup essentials.
+Explore our [sample application](https://github.com/cap-ts/esi-cap_samples) for a practical implementation of this package. It demonstrates integration patterns, service bindings, and setup essentials.
 
 Additional documentation pages will be added soon.
 
