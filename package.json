@@ -2,7 +2,7 @@
   "name": "@cap-ts/esi",
   "version": "1.8.16",
   "description": "Enterprise System Integration Based on SAP CAP",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "types": "types/index.d.ts",
   "author": "SAP-Code-World",
   "license": "SEE LICENSE IN LICENSE",
@@ -36,7 +36,7 @@
     "@sap/cds": "^9.9.1"
   },
   "files": [
-    "dist",
+    "src",
     "types"
   ],
   "bugs": {
