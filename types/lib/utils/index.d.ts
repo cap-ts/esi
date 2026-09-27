@@ -453,5 +453,15 @@ export class UUID {
      */
     inverse(sUUID: string): object;
 }
-export { _LOG };
+/**
+ * Tagged template for log output: renders only the interpolated values and joins them with `" | "`.
+ * `undefined` becomes `"undefined"`, an array its length, an object indented JSON; anything else is kept as is.
+ * The literal parts of the template are ignored.
+ *
+ * @example
+ * logger.debug(oRequest, "handleRead", "END", _LOG`${oResult}`);
+ * @public
+ * @type {(strings: TemplateStringsArray, ...values: any[]) => string}
+ */
+export const _LOG: (strings: TemplateStringsArray, ...values: any[]) => string;
 //# sourceMappingURL=index.d.ts.map
