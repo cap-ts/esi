@@ -447,6 +447,22 @@ export class UUID {
      * @returns {string} UUID
      */
     converse(oJsonData: object): string;
+    /** Returns the UUID of the input Json Data, or `undefined` when a field does not fit its format (instead of throwing
+     * like `converse`).
+     * @param {object} oJsonData - Json Object that reperesents data for converting it into UUID
+     * @returns {string|undefined} UUID, or `undefined`
+     */
+    tryConverse(oJsonData: object): string | undefined;
+    /** Returns the fields encoded in the UUID when every field fits its format, else `undefined`. Unlike `inverse`, a
+     * UUID of the right shape whose fields do not fit (or no UUID at all) gives no partial or empty object.
+     * @param {string} sUUID - UUID representation of json data
+     * @returns {{CompanyCode: string, PersonWorkAgreementExternalID: string, TimeSheetRecord: string}|undefined} - the fields, or `undefined`
+     */
+    toKeys(sUUID: string): {
+        CompanyCode: string;
+        PersonWorkAgreementExternalID: string;
+        TimeSheetRecord: string;
+    } | undefined;
     /** Returns a Json Data representation of the input UUID
      * @returns {object} - Json Object that reperesents data generated from UUID
      * @param {string} sUUID - UUID representation of json data
