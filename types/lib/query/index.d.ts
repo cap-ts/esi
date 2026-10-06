@@ -97,6 +97,10 @@ export namespace query {
         namespace where {
             export function _toANDArray(oWhereClause: any[], bAlwwaysArray?: boolean): any[] | undefined;
             export function toANDArray(oWhereClause: any[], bAlwwaysArray?: boolean): Array<WhereCondition[]> | undefined;
+            export function terms(aWhere?: any[]): any[][];
+            export function fromTerms(aTerms: any[][]): any[];
+            export function isEqual(aTerm: any[], sName: string): boolean;
+            export function toEqual(aTerm: any[]): any[];
             export function convert(oIDWhere: object, oIDColumns: object, fConvertLogic?: Function): any[];
             export function add(oRequest: Request, oWhereClause: any[]): void;
             export function apply(oData: any[], oWhereClause: any[]): any[];

@@ -1,6 +1,6 @@
 {
   "name": "@cap-ts/esi",
-  "version": "1.8.50",
+  "version": "1.9.0-beta.6",
   "description": "Enterprise System Integration Based on SAP CAP",
   "main": "src/index.js",
   "types": "types/index.d.ts",
@@ -15,12 +15,12 @@
     "CAP",
     "Remote",
     "Service",
-    "Integration"
+    "Integration",
+    "Plugin"
   ],
   "dependencies": {
     "@sap-cloud-sdk/connectivity": "^4.7.0",
     "@sap-cloud-sdk/http-client": "^4.7.0",
-    "deasync": "^0.1.30",
     "fs-extra": "^11.3.0",
     "lodash": "^4.17.21",
     "log4js": "^6.9.1",
@@ -29,14 +29,15 @@
     "xml2js": "^0.6.2"
   },
   "peerDependencies": {
-    "@cap-ts/remote-service-adapter": "^0.1.0",
-    "@cap-ts/soap-adapter": "^0.2.0",
+    "@cap-ts/remote-service-adapter": "^0.1.0 || ^0.2.0-beta.0",
+    "@cap-ts/soap-adapter": "^0.2.0 || ^0.3.0-beta.0",
     "@sap/cds": "^9.9.1 || ^10"
   },
   "engines": {
     "node": ">=20"
   },
   "files": [
+    "cds-plugin.js",
     "src",
     "types"
   ],

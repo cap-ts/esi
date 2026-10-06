@@ -447,6 +447,25 @@ uid.inverse("c0656612-2e12-4345-8670-000000012345");
 // { ABC: "AB12", MNO: "I1234567", XYZ: "000000012345" }
 ```
 
+### `toKeys(sUUID)`
+
+Like `inverse`, but returns the fields only when every field fits its format; anything else (no UUID, a UUID of the
+right shape whose fields do not fit) gives `undefined` instead of an empty or partial object.
+
+| Parameter | Type     | Description                        |
+|-----------|----------|------------------------------------|
+| `sUUID`   | `string` | A UUID previously created by `converse` |
+| **Returns** | `object \| undefined` | The fields, or `undefined` |
+
+### `tryConverse(oJsonData)`
+
+Like `converse`, but returns `undefined` instead of throwing when a field does not fit its format.
+
+| Parameter   | Type     | Description |
+|-------------|----------|-------------|
+| `oJsonData` | `object` | The fields to encode |
+| **Returns** | `string \| undefined` | The UUID, or `undefined` |
+
 ---
 
 ## Quick Usage Examples
