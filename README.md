@@ -41,7 +41,7 @@ Submit an issue via our [GitHub Issues Tracker](https://github.com/cap-ts/esi/is
 ## 📄 License
 
 This package is provided under the terms of the **SAP-Code-World** [Usage License Agreement](LICENSE).
-
+<!--
 ### Licence token
 
 Using `@cap-ts/esi` in production needs a licence token from SAP-Code-World. The token is a signed text string. The
@@ -77,5 +77,5 @@ What happens:
   feature: it is on when your licence says so.
 - A licence can be bound to Cloud Foundry org or space GUIDs. It is then only valid in those orgs or spaces.
 - A running application is never stopped. Renewing means setting the new token and restarting the app.
-
+-->
 © 2025 **SAP-Code-World**. All rights reserved.
