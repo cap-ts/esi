@@ -30,6 +30,7 @@
   - [array.topN(oSortedArray, iTop)](#arraytopnosortedarray-itop)
   - [array.flat(oArray, sFlattenedProperty)](#arrayflatoarray-sflattenedproperty)
   - [array.unique(oArray)](#arrayuniqueoarray)
+  - [array.uniqueBy(oArray, sPropertyName)](#arrayuniquebyoarray-spropertyname)
   - [array.order(oArray, oOrder)](#arrayorderoarray-oorder)
   - [array.projection(oArray, oColumns, bHasAssociattion?)](#arrayprojectionoarray-ocolumns-bhasassociattion)
   - [array.map(oArray, oMap)](#arraymapoarray-omap)
@@ -63,7 +64,7 @@
 ## Exports
 
 ```js
-module.exports = { date, xml, json, array, UUID };
+module.exports = { date, xml, json, array, sap, UUID };
 ```
 
 ---
@@ -270,6 +271,17 @@ Deduplicates using Lodash `_.uniqWith` with `_.isEqual` for deep comparison.
 
 ---
 
+### `array.uniqueBy(oArray, sPropertyName)`
+
+Keeps the first element per value of a property (e.g. one row per key when a backend answers an entry twice). Elements
+without the property (`undefined` / `null`) are all kept. A value that is not an array is returned as is.
+
+```js
+array.uniqueBy([{ ID: 1, a: 1 }, { ID: 1, a: 2 }, { ID: 2 }], 'ID'); // [{ ID: 1, a: 1 }, { ID: 2 }]
+```
+
+---
+
 ### `array.order(oArray, oOrder)`
 
 Reorders keys for every object in the array per the specified key order.
@@ -396,6 +408,21 @@ array.toGroupByPropertyList(data, ["region", "details.category"]);
 
 ---
 
+## Class: `sap`
+
+SAP-standard value lists. All methods are `static`.
+
+### `sap.decimalNotation(sCode)`
+
+The decimal notation of an SAP user (`DecimalFormatCode`, SU01 "Decimal Notation") as `{ decimal, thousand }`:
+blank or any other code `1.234.567,89` (`,` / `.`), `X` `1,234,567.89` (`.` / `,`), `Y` `1 234 567,89` (`,` / space).
+
+```js
+sap.decimalNotation('X'); // { decimal: '.', thousand: ',' }
+```
+
+---
+
 ## Class: `UUID`
 
 Singleton class for deterministic UUID generation and parsing based on a fixed field configuration. Encodes/decodes structured business data into RFC-4122-compliant UUIDs.
@@ -407,6 +434,17 @@ const uuidHelper = new UUID();
 ```
 
 Creates a singleton instance. Subsequent `new UUID()` calls return the same instance.
+
+---
+
+### `UUID.isValid(vValue)` (static)
+
+Whether a value is a UUID string (RFC 9562, any version, also the nil and max UUID), e.g. an ID from a request.
+
+```js
+UUID.isValid('6ba7b810-9dad-11d1-80b4-00c04fd430c8'); // true
+UUID.isValid('abc');                                   // false
+```
 
 ---
 

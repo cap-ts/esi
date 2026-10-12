@@ -26,6 +26,36 @@ export type WhereCondition = {
     "": any;
 };
 /**
+ * - How a field is sent in the interval selection of an SAP enterprise service
+ */
+export type IntervalField = {
+    /**
+     * - The interval element, e.g. `'DocumentIDInterval'`
+     */
+    Name: string;
+    /**
+     * - Its lower-boundary element, e.g. `'LowerBoundaryDocumentID'`
+     */
+    Parameter: string;
+    /**
+     * - The operators the service accepts for the field (default: `=`, `<`, `<=`, `>`, `>=`, `in`)
+     */
+    operators?: string[];
+};
+/**
+ * - Result of `SELECT.where.toIntervals`
+ */
+export type IntervalSelection = {
+    /**
+     * - Per interval element, its intervals `{ IntervalBoundaryTypeCode, <Parameter>: value }`
+     */
+    intervals: Record<string, any[]>;
+    /**
+     * - Every condition was translated, and no field twice: the service applies the whole WHERE
+     */
+    complete: boolean;
+};
+/**
  * - A column reference object
  */
 export type ColumnRef = {
@@ -101,6 +131,16 @@ export namespace query {
             export function fromTerms(aTerms: any[][]): any[];
             export function isEqual(aTerm: any[], sName: string): boolean;
             export function toEqual(aTerm: any[]): any[];
+            export function fieldOf(aTerm: any[]): string | undefined;
+            export function fieldsOf(vWhere?: any[] | {
+                xpr: any[];
+            }): Array<string | undefined>;
+            export function _conditionsOf(vWhere?: any[] | {
+                xpr: any[];
+            }): any[][];
+            export function toIntervals(vWhere?: any[] | {
+                xpr: any[];
+            }, oFields: Record<string, IntervalField>): IntervalSelection;
             export function convert(oIDWhere: object, oIDColumns: object, fConvertLogic?: Function): any[];
             export function add(oRequest: Request, oWhereClause: any[]): void;
             export function apply(oData: any[], oWhereClause: any[]): any[];

@@ -245,6 +245,20 @@ export class array {
      */
     public static unique(oArray: any[]): any[];
     /**
+     * Keeps the first element per value of a property, e.g. one row per key when a backend answers an entry twice.
+     * Elements without the property (`undefined` / `null`) are all kept: without a value there is nothing to compare.
+     * A value that is not an array is returned as is.
+     *
+     * @public
+     * @static
+     * @param {any[]} oArray - The array to deduplicate.
+     * @param {string} sPropertyName - The property whose value identifies an element.
+     * @returns {any[]} A new array with the first element per property value.
+     * @example
+     * array.uniqueBy([{ ID: 1, a: 1 }, { ID: 1, a: 2 }, { ID: 2 }], 'ID'); // [{ ID: 1, a: 1 }, { ID: 2 }]
+     */
+    public static uniqueBy(oArray: any[], sPropertyName: string): any[];
+    /**
      * Reorders the keys of each object in an array according to the specified key order.
      * If the input is a single object, delegates to {@link json.order}.
      *
@@ -427,6 +441,29 @@ export class array {
     };
 }
 /**
+ * SAP-standard value lists, e.g. the formats of an SAP user.
+ *
+ * @class
+ * @public
+ */
+export class sap {
+    /**
+     * The decimal notation of an SAP user (`DecimalFormatCode`, SU01 "Decimal Notation"): blank (or any other code)
+     * 1.234.567,89; `X` 1,234,567.89; `Y` 1 234 567,89.
+     *
+     * @public
+     * @static
+     * @param {string} [sCode] - The decimal format code.
+     * @returns {{ decimal: string, thousand: string }} The decimal and the thousands separator.
+     * @example
+     * sap.decimalNotation('X'); // { decimal: '.', thousand: ',' }
+     */
+    public static decimalNotation(sCode?: string | undefined): {
+        decimal: string;
+        thousand: string;
+    };
+}
+/**
  * UUID handles UUID related API's.
  *
  * @class
@@ -440,6 +477,18 @@ export class UUID {
      * @static
      */
     private static "__#private@#instance";
+    /**
+     * Whether a value is a UUID string (RFC 9562, any version, also the nil and max UUID), e.g. an ID from a request.
+     *
+     * @public
+     * @static
+     * @param {unknown} vValue - The value to check.
+     * @returns {boolean} `true` for a UUID string.
+     * @example
+     * UUID.isValid('c0656612-2e12-4345-8670-000000012345'); // true
+     * UUID.isValid('abc');                                   // false
+     */
+    public static isValid(vValue: unknown): boolean;
     /** Internal configuration — not part of public API @private @type {object} */
     private _Config;
     /** Returns a UUID representation of the input Json Data

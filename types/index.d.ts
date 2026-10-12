@@ -7,6 +7,7 @@ declare namespace _exports {
         export { xml };
         export { json };
         export { array };
+        export { sap };
         export { UUID };
     }
     export namespace esi {
@@ -34,6 +35,7 @@ import { date } from "./lib/utils";
 import { xml } from "./lib/utils";
 import { json } from "./lib/utils";
 import { array } from "./lib/utils";
+import { sap } from "./lib/utils";
 import { UUID } from "./lib/utils";
 import { log } from "./lib/log";
 import { query } from "./lib/query";
@@ -42,7 +44,7 @@ import { impl } from "./lib/impl";
 import { connect } from "./lib/connect";
 import { user } from "./lib/user";
 import { RemoteApplicationService } from "@cap-ts/remote-service-adapter";
-declare const SoapApplicationService: typeof soap.ApplicationService;
+declare const SoapApplicationService: typeof soap.Service;
 import { _LOG } from "./lib/utils";
 import type { EsiUserAttributes as UserAttributes } from './lib/user';
 import type { EsiUserProvider as UserProvider } from './lib/user';
