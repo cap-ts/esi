@@ -6,8 +6,17 @@ declare const _exports: {
         /** @type {Map<string, Promise<IFlowService>>} */
         iflows: Map<string, Promise<IFlowService>>;
         /**
-         * The error of a failed iFlow call as an `IFlowError`: the message with the response body, and the MPL id that
-         * Integration Suite reports in it.
+         * The value of a response header, whatever the case of its name.
+         *
+         * @param {any} oHeaders
+         * @param {string} sName - Lower case name.
+         * @returns {string | undefined}
+         */
+        header: (oHeaders: any, sName: string) => string | undefined;
+        /**
+         * The error of a failed iFlow call as an `IFlowError`: the message with the response body (a JSON body
+         * serialized), and the MPL id: the `SAP_MessageProcessingLogID` response header of Integration Suite, else the
+         * id named in the body.
          *
          * @param {any} oError
          * @returns {IFlowError}

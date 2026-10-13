@@ -1,6 +1,6 @@
 {
   "name": "@cap-ts/esi",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Enterprise System Integration Based on SAP CAP",
   "main": "src/index.js",
   "types": "types/index.d.ts",
@@ -26,8 +26,8 @@
     "xml2js": "^0.6.2"
   },
   "peerDependencies": {
-    "@cap-ts/remote-service-adapter": "^0.2.1",
-    "@cap-ts/soap-adapter": "^0.4.0",
+    "@cap-ts/remote-service-adapter": "^0.2",
+    "@cap-ts/soap-adapter": "^0.4",
     "@sap/cds": "^9.9.1 || ^10"
   },
   "engines": {
