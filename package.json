@@ -1,6 +1,6 @@
 {
   "name": "@cap-ts/esi",
-  "version": "1.9.2",
+  "version": "2.0.0",
   "description": "Enterprise System Integration Based on SAP CAP",
   "main": "src/index.js",
   "types": "types/index.d.ts",
@@ -19,12 +19,9 @@
     "Plugin"
   ],
   "dependencies": {
-    "@sap-cloud-sdk/connectivity": "^4.7.0",
-    "@sap-cloud-sdk/http-client": "^4.7.0",
     "fs-extra": "^11.3.0",
     "lodash": "^4.17.21",
     "log4js": "^6.9.1",
-    "soap": "^1.10.0",
     "uuid": "^11.1.0",
     "xml2js": "^0.6.2"
   },
