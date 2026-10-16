@@ -1,7 +1,7 @@
 # @cap-ts/esi Utilities API Reference
 
 > **Module:** `utils`  
-> **Purpose:** Core utility belt — date validation, XML parsing, JSON manipulation, array operations, and UUID generation/parsing.
+> **Purpose:** Core utility belt — dates, XML parsing, JSON manipulation, array operations, SAP user formats, wildcards, run-once functions, and UUID generation/parsing.
 
 ---
 
@@ -11,6 +11,7 @@
 - [Exports](#exports)
 - [Class: `date`](#class-date)
   - [date.isValid(sDate)](#dateisvalidsdate)
+  - [Formatting and ranges](#date-formatting-and-ranges)
 - [Class: `xml`](#class-xml)
   - [xml.isValid(oXML)](#xmlisvalidoxml)
 - [Class: `json`](#class-json)
@@ -25,6 +26,7 @@
   - [json.merge(oJson1, oJson2)](#jsonmergeojson1-ojson2)
   - [json.flat(oJson, sFlattenedProperty)](#jsonflatojson-sflattenedproperty)
   - [json.stripUndefined(oSourceJson)](#jsonstripundefinedosourcejson)
+  - [Parsing, columns and metadata](#json-parsing-columns-and-metadata)
 - [Class: `array`](#class-array)
   - [array.add(oArray, oItem)](#arrayaddoarray-oitem)
   - [array.topN(oSortedArray, iTop)](#arraytopnosortedarray-itop)
@@ -44,6 +46,10 @@
   - [array.findProperty(oArray, sProjectionFieldName)](#arrayfindpropertyoarray-sprojectionfieldname)
   - [array.toGroupByPropertyName(oArray, sPropertyName)](#arraytogroupbypropertynameoarray-spropertyname)
   - [array.toGroupByPropertyList(oArray, oPropertyList)](#arraytogroupbypropertylistoarray-opropertylist)
+  - [Joining, grouping and chunking](#array-joining-grouping-and-chunking)
+- [Class: `sap`](#class-sap)
+- [Class: `string`](#class-string)
+- [Class: `fn`](#class-fn)
 - [Class: `UUID`](#class-uuid)
   - [constructor()](#constructor)
   - [converse(oJsonData)](#converseoJsondata)
@@ -64,7 +70,7 @@
 ## Exports
 
 ```js
-module.exports = { date, xml, json, array, sap, UUID };
+module.exports = { date, xml, json, array, sap, string, fn, UUID };
 ```
 
 ---
@@ -85,6 +91,30 @@ Date-related validation helpers. All methods are `static`.
 ```js
 await date.isValid("2026-04-20");    // true
 await date.isValid("not-a-date");    // false
+```
+
+---
+
+### Date formatting and ranges
+
+All dates are handled in UTC, so a date-only string (`yyyy-MM-dd`) keeps its day in every time zone.
+
+| Function | Result |
+| --- | --- |
+| `date.PATTERN` | `ISO` `yyyy-MM-dd`, `BASIC` `yyyyMMdd` (SAP DATS), `DMY` `dd-MM-yyyy`, `TIMESTAMP` `yyyy-MM-ddTHH:mm:ss` |
+| `date.format(date, pattern = PATTERN.ISO)` | The date with the tokens `yyyy`, `MM`, `dd`, `HH`, `mm`, `ss` replaced (zero-padded, UTC); other characters kept. `null` for no or an invalid date. |
+| `date.formatFields(rowOrRows, fields, pattern = PATTERN.ISO)` | Formats the fields of a row or of every row in place; `null` / `undefined` values stay. |
+| `date.isDateString(value)` | Synchronous check of the notation: ISO date-time, `yyyy-MM-dd`, `dd/MM/yyyy` or `MM/dd/yyyy`. |
+| `date.addMonths(months, date = now)` | A new date, months added (negative: subtracted), at local midnight. |
+| `date.weekOf(date = now)` | `{ Low, High }`: Monday and Sunday of the week (`yyyy-MM-dd`). |
+| `date.calendarMonth(yyyyMM = current month)` | `{ Low, High, YearMonth }`: Monday of the first and Sunday of the last week of the month. |
+| `date.monthRange('yyyy-MM-dd...')` | `[first, last]` day of the month; `undefined` for another notation. |
+| `date.days({ Low, High })` | Every day of the range (both included) as dates at UTC midnight. |
+
+```js
+date.format('2026-04-05T08:05:09Z', date.PATTERN.DMY);  // '05-04-2026'
+date.calendarMonth('202604');                           // { Low: '2026-03-30', High: '2026-05-03', YearMonth: '202604' }
+date.monthRange('2024-02-10');                          // ['2024-02-01', '2024-02-29']
 ```
 
 ---
@@ -243,6 +273,23 @@ Removes properties where the value is `undefined`, `null`, or an empty string.
 
 ---
 
+### JSON parsing, columns and metadata
+
+| Function | Result |
+| --- | --- |
+| `json.tryParse(text)` | The parsed value; `undefined` for a value that is not JSON text (never throws). |
+| `json.isPrimitive(value)` | `true` for `string`, `number`, `boolean`, `null`, `undefined` and `Date`. |
+| `json.toColumns(object, separator = '_')` | One level of columns: nested keys joined (`response_status`), arrays as JSON text, non-JSON values dropped. An `Error`'s own enumerable properties are kept. |
+| `json.label(name)` | A label from a field name: last segment of a dotted path, camelCase split (`'Order.ShipToCity'` -> `'Ship To City'`). |
+| `json.metadata(rows, labelFn = json.label)` | `{ properties: [{ name, type, label }] }`: every field once, its EDM type from its first value (`sap.edmType`). Pass a `labelFn` for translated labels. |
+
+```js
+json.toColumns({ message: 'Timeout', response: { status: 408 } }); // { message: 'Timeout', response_status: 408 }
+json.metadata([{ ID: 1, Name: 'A' }], (name) => i18n.at(name) ?? json.label(name));
+```
+
+---
+
 ## Class: `array`
 
 Array operations with automatic fallback to the `json` class for single-object inputs. All methods are `static`.
@@ -271,13 +318,16 @@ Deduplicates using Lodash `_.uniqWith` with `_.isEqual` for deep comparison.
 
 ---
 
-### `array.uniqueBy(oArray, sPropertyName)`
+### `array.uniqueBy(oArray, sPropertyName, oOptions?)`
 
 Keeps the first element per value of a property (e.g. one row per key when a backend answers an entry twice). Elements
-without the property (`undefined` / `null`) are all kept. A value that is not an array is returned as is.
+without the property (`undefined` / `null`) are all kept. A value that is not an array is returned as is. With
+`{ last: true }` the last element per value wins (e.g. the rows of two reads, the later read wins), at the position of
+the first one.
 
 ```js
-array.uniqueBy([{ ID: 1, a: 1 }, { ID: 1, a: 2 }, { ID: 2 }], 'ID'); // [{ ID: 1, a: 1 }, { ID: 2 }]
+array.uniqueBy([{ ID: 1, a: 1 }, { ID: 1, a: 2 }, { ID: 2 }], 'ID');                 // [{ ID: 1, a: 1 }, { ID: 2 }]
+array.uniqueBy([{ ID: 1, a: 1 }, { ID: 1, a: 2 }, { ID: 2 }], 'ID', { last: true }); // [{ ID: 1, a: 2 }, { ID: 2 }]
 ```
 
 ---
@@ -408,6 +458,28 @@ array.toGroupByPropertyList(data, ["region", "details.category"]);
 
 ---
 
+### Array joining, grouping and chunking
+
+| Function | Result |
+| --- | --- |
+| `array.semiJoin(left, right, key, rightKey = key)` | The elements of `left` whose `key` value occurs in `right` (e.g. headers that have items). |
+| `array.bestBy(rows, key, rankFn)` | The best element per `key` value: `rankFn(row)` returns a tuple, compared element by element (higher wins; a tie keeps the earlier). Rows without a value are dropped. |
+| `array.sumBy(rows, dimensions, measures)` | One row per combination of dimension values (trimmed text), the measures summed; a measure given as text stays text. |
+| `array.nest(rows, levels)` | A tree from flat rows: per level `{ key, fields, children? }`, `fields` as names or target -> source map, `children` the property of the next level. |
+| `array.chunkByLength(values, buildFn, maxLength)` | Chunks whose text `buildFn(chunk)` stays shorter than `maxLength` (e.g. a URL); `undefined` when not even one value fits. |
+
+```js
+array.bestBy(prices, 'ProductID', (r) => [r.Valid ? 1 : 0, r.ValidFrom ?? '']);
+array.sumBy(rows, ['Region', 'Channel'], ['Amount']);
+array.nest(rows, [
+    { key: 'OrderID', fields: ['OrderID', 'Customer'], children: 'Items' },
+    { key: 'ItemID', fields: { ID: 'ItemID', Quantity: 'Quantity' } }
+]);
+array.chunkByLength(codes, (a) => `${path}?$filter=${a.map((c) => `Code eq '${c}'`).join(' or ')}`, 2048);
+```
+
+---
+
 ## Class: `sap`
 
 SAP-standard value lists. All methods are `static`.
@@ -419,6 +491,41 @@ blank or any other code `1.234.567,89` (`,` / `.`), `X` `1,234,567.89` (`.` / `,
 
 ```js
 sap.decimalNotation('X'); // { decimal: '.', thousand: ',' }
+```
+
+| Function | Result |
+| --- | --- |
+| `sap.dateFormat(code)` | The date format of an SAP user (`DateFormatCode`): `1` `DD.MM.YYYY`, `2` `MM/DD/YYYY`, `3` `MM-DD-YYYY`, `4` `YYYY.MM.DD`, `5` `YYYY/MM/DD`, `6` `YYYY-MM-DD`, `7`-`9` `GYY.MM.DD` / `GYY/MM/DD` / `GYY-MM-DD`; any other code `YYYY/MM/DD`. |
+| `sap.timeFormat(code)` | The time format of an SAP user (`TimeFormatCode`): `1` / `3` `hh:mm:ss A`, `2` / `4` `hh:mm:ss a`, otherwise `HH:mm:ss`. |
+| `sap.edmType(value)` | The OData EDM type of a value: `Edm.Int32`, `Edm.Decimal`, `Edm.Boolean`, `Edm.DateTime` (a `Date` or a date string), else `Edm.String`. |
+
+---
+
+## Class: `string`
+
+| Function | Result |
+| --- | --- |
+| `string.wildcard(pattern)` | A `RegExp` that matches the whole value: `*` any text, every other character itself. |
+| `string.matches(value, patterns = [])` | Whether a non-empty value matches one of the wildcard patterns. No pattern is no restriction (every non-empty value matches); non-string patterns are ignored. |
+
+```js
+string.matches('Z_SALES_MANAGER', ['Z_SALES_*', 'Z_FI_*']); // true
+```
+
+---
+
+## Class: `fn`
+
+### `fn.once(asyncFn)`
+
+Wraps an async function so that it runs once: every call gets the same promise, also concurrent calls while the first
+runs (the arguments of the first call are used). A rejected run is forgotten, so the next call retries. `reset()`
+forgets the result, e.g. to reload a configuration value.
+
+```js
+const exchangeRates = utils.fn.once(async () => loadExchangeRates());
+await exchangeRates(); // reads
+await exchangeRates(); // the same result, no second read
 ```
 
 ---
@@ -495,6 +602,9 @@ right shape whose fields do not fit) gives `undefined` instead of an empty or pa
 | `sUUID`   | `string` | A UUID previously created by `converse` |
 | **Returns** | `object \| undefined` | The fields, or `undefined` |
 
+TypeScript: the result is `Record<string, string> | undefined`; name your key type to get it typed:
+`new UUID().toKeys<OrderKey>(id)`.
+
 ### `tryConverse(oJsonData)`
 
 Like `converse`, but returns `undefined` instead of throwing when a field does not fit its format.
@@ -509,7 +619,7 @@ Like `converse`, but returns `undefined` instead of throwing when a field does n
 ## Quick Usage Examples
 
 ```js
-const { date, xml, json, array, UUID } = require('@cap-ts/esi').utils;
+const { date, xml, json, array, sap, string, fn, UUID } = require('@cap-ts/esi').utils;
 
 // Validate & transform
 const valid = await date.isValid("2026-04-20");

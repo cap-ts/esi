@@ -1,6 +1,6 @@
 /**
  * Attributes of `req.user.attr` after enrichment: the profile of the provider merged with the token attributes.
- * Pass your own profile shape to type it, e.g. `EsiUserAttributes<{ Profile: { Roles: string[] } }>`.
+ * Pass your own profile shape to type it, e.g. `EsiUserAttributes<{ Department: string, Groups: string[] }>`.
  */
 export type EsiUserAttributes<T extends Record<string, any> = Record<string, any>> = T & {
     email?: string;
@@ -54,5 +54,12 @@ export namespace user {
     function enrich(oUser: object, sTenant?: string): Promise<boolean>;
     function invalidate(sUserId?: string, sTenant?: string): void;
     function stats(): EsiUserStats;
+    function technical(): object;
+    function tx(oService: {
+        tx: Function;
+    }, fRun?: (oTx: any) => Promise<any>): any;
+    function callerOrTechnical(oService: {
+        tx: Function;
+    }, oRequest?: object): any;
 }
 //# sourceMappingURL=index.d.ts.map

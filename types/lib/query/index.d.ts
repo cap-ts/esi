@@ -102,11 +102,24 @@ export type Fromable = {
     Association?: any;
 };
 export namespace query {
+    function keyOf(oRequest: Request & {
+        data?: Record<string, any>;
+        params?: any[];
+    }, sName: string): any;
     namespace DELETE {
         function getKeyPropertyValueByName(oRequest: Request, sPropertyName: string): string | undefined;
     }
     namespace SELECT {
         namespace columns {
+            let DRAFT: readonly string[];
+            function expand(oEntity: {
+                associations?: Record<string, unknown>;
+            }, aAllowed: string[]): Array<string | ColumnRef>;
+            function ensure(aColumns: Array<string | ColumnRef> | undefined, aNeeded: string[]): {
+                columns: Array<string | ColumnRef> | undefined;
+                requested: string[] | undefined;
+            };
+            function without(aColumns: Array<string | ColumnRef> | undefined, aNames: readonly string[]): Array<string | ColumnRef> | undefined;
             function has(oRequest: Request, sPropertyName: string, sAssociationName?: string): boolean;
             function get(oColumns: Array<ColumnRef | string>): string | string[] | undefined;
             function parse(oQueryString: {
@@ -119,12 +132,46 @@ export namespace query {
                 export { parse_1 as parse };
             }
         }
+        namespace search {
+            function text(aSearch: any[] | undefined): string | undefined;
+        }
+        function processingConditions(oSelect: {
+            limit?: {
+                rows?: {
+                    val?: number;
+                };
+            };
+        } | undefined, iPageSize?: number): {
+            QueryHitsTotalNumberIndicator: boolean;
+            QueryHitsMaximumNumberValue: number;
+            QueryHitsCountIndicator: boolean;
+            QueryHitsUnlimitedIndicator: boolean;
+        };
         namespace from {
             function fromable(oFrom: {
                 ref: any[];
             }, iIndex?: number): Fromable;
         }
         namespace where {
+            export function anyEqual(sName: string, aValues: any[]): any[];
+            export function allEqual(oValues: Record<string, any>): any[];
+            export function between(sName: string, vLow: any, vHigh: any): any[];
+            export function inList(sName: string, aValues: any[]): any[];
+            export function fromValueRanges(sName: string, aRanges: {
+                Low?: any;
+                High?: any;
+            }[], oOptions?: {
+                nullValues?: any[];
+                defaultLow?: any;
+            }): any[];
+            export function termsOf(oQuery: object | undefined): any[][];
+            export function hasValues(vWhere?: any[] | {
+                xpr: any[];
+            }, sName: string): boolean;
+            export function equalities(vWhere?: any[] | {
+                xpr: any[];
+            }): Record<string, any>;
+            export function toMonthRange(aWhere: any[] | undefined, sName: string): void;
             export function _toANDArray(oWhereClause: any[], bAlwwaysArray?: boolean): any[] | undefined;
             export function toANDArray(oWhereClause: any[], bAlwwaysArray?: boolean): Array<WhereCondition[]> | undefined;
             export function terms(aWhere?: any[]): any[][];

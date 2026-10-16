@@ -5,6 +5,20 @@
  */
 export class date {
     /**
+     * Patterns of {@link date.format}: `ISO` 2026-04-15, `BASIC` 20260415 (the SAP internal date, DATS), `DMY`
+     * 15-04-2026, `TIMESTAMP` 2026-04-15T08:05:09.
+     *
+     * @public
+     * @static
+     * @readonly
+     */
+    public static readonly PATTERN: Readonly<{
+        ISO: "yyyy-MM-dd";
+        BASIC: "yyyyMMdd";
+        DMY: "dd-MM-yyyy";
+        TIMESTAMP: "yyyy-MM-ddTHH:mm:ss";
+    }>;
+    /**
      * Validates whether a given string is a valid date.
      * Attempts to parse the string into a Date object and checks for validity.
      *
@@ -17,6 +31,115 @@ export class date {
      * await date.isValid("not-a-date"); // false
      */
     public static isValid(sDate: string): Promise<boolean>;
+    /**
+     * Whether a value is a string in a common date notation: an ISO 8601 date-time (`yyyy-MM-ddTHH:mm:ss...`),
+     * `yyyy-MM-dd`, or `dd/MM/yyyy` / `MM/dd/yyyy`. Synchronous and by notation only (unlike {@link date.isValid}).
+     *
+     * @public
+     * @static
+     * @param {unknown} vValue - The value to check.
+     * @returns {boolean} `true` for a date string.
+     * @example
+     * date.isDateString('2026-04-15');          // true
+     * date.isDateString('2026-04-15T10:30:00'); // true
+     * date.isDateString('hello');               // false
+     */
+    public static isDateString(vValue: unknown): boolean;
+    /**
+     * A date `iMonths` months after (negative: before) a date, at local midnight.
+     *
+     * @public
+     * @static
+     * @param {number} iMonths - Months to add (negative to subtract).
+     * @param {Date|string|number} [vDate=new Date()] - The base date.
+     * @returns {Date} A new date.
+     * @example
+     * date.addMonths(-2, new Date(2026, 5, 1)); // 2026-04-01 (local midnight)
+     */
+    public static addMonths(iMonths: number, vDate?: Date | string | number): Date;
+    /**
+     * Formats a date in UTC with a pattern of the tokens `yyyy`, `MM`, `dd`, `HH`, `mm`, `ss` (zero-padded); every other
+     * character is kept. A date-only string (`yyyy-MM-dd`) is read as UTC midnight, so it keeps its day.
+     *
+     * @public
+     * @static
+     * @param {Date|string|number|null|undefined} vDate - The date.
+     * @param {string} [sPattern='yyyy-MM-dd'] - The pattern, e.g. {@link date.PATTERN}.
+     * @returns {string|null} The formatted date, `null` without a date or for an invalid one.
+     * @example
+     * date.format('2026-04-15T08:05:09Z', 'yyyyMMdd');            // '20260415'
+     * date.format('2026-04-15T08:05:09Z', 'yyyy-MM-ddTHH:mm:ss');   // '2026-04-15T08:05:09'
+     * date.format(null);                                           // null
+     */
+    public static format(vDate: Date | string | number | null | undefined, sPattern?: string): string | null;
+    /**
+     * Formats the given fields of one row or of every row of an array with {@link date.format} (changed in place).
+     * `null` / `undefined` values are left as they are.
+     *
+     * @public
+     * @static
+     * @param {object|object[]} vData - A row or rows.
+     * @param {string[]} [aFields=[]] - The date fields.
+     * @param {string} [sPattern='yyyy-MM-dd'] - The pattern.
+     * @returns {object|object[]} The same data.
+     * @example
+     * date.formatFields([{ Start: '2026-04-15' }], ['Start'], 'dd-MM-yyyy'); // [{ Start: '15-04-2026' }]
+     */
+    public static formatFields(vData: any, aFields?: string[], sPattern?: string): object | object[];
+    /**
+     * Monday and Sunday (`yyyy-MM-dd`, UTC) of the week of a date.
+     *
+     * @public
+     * @static
+     * @param {Date|string|number} [vDate=new Date()] - A day of the week.
+     * @returns {{ Low: string, High: string }} The week.
+     * @example
+     * date.weekOf('2026-10-16'); // { Low: '2026-10-12', High: '2026-10-18' }
+     */
+    public static weekOf(vDate?: Date | string | number): {
+        Low: string;
+        High: string;
+    };
+    /**
+     * The calendar view of a month: from the Monday of its first week to the Sunday of its last week (`yyyy-MM-dd`, UTC).
+     *
+     * @public
+     * @static
+     * @param {string} [sYearMonth] - `yyyyMM`; default: the current month (UTC).
+     * @returns {{ Low: string, High: string, YearMonth: string }} The range and the month as `yyyyMM`.
+     * @example
+     * date.calendarMonth('202604'); // { Low: '2026-03-30', High: '2026-05-03', YearMonth: '202604' }
+     */
+    public static calendarMonth(sYearMonth?: string): {
+        Low: string;
+        High: string;
+        YearMonth: string;
+    };
+    /**
+     * The first and the last day (`yyyy-MM-dd`) of the month of a date given as `yyyy-MM-dd...`.
+     *
+     * @public
+     * @static
+     * @param {string} sDate - The date.
+     * @returns {[string, string]|undefined} The month, `undefined` for another notation.
+     * @example
+     * date.monthRange('2024-02-10'); // ['2024-02-01', '2024-02-29']
+     */
+    public static monthRange(sDate: string): [string, string] | undefined;
+    /**
+     * Every day of a range, `Low` to `High` (both included), as dates at UTC midnight.
+     *
+     * @public
+     * @static
+     * @param {{ Low: Date|string, High: Date|string }} oRange - The range.
+     * @returns {Date[]} The days.
+     * @example
+     * date.days({ Low: '2026-04-01', High: '2026-04-03' }).map((d) => date.format(d)); // ['2026-04-01', '2026-04-02', '2026-04-03']
+     */
+    public static days(oRange: {
+        Low: Date | string;
+        High: Date | string;
+    }): Date[];
 }
 /**
  * XML utility class providing XML validation helpers.
@@ -190,6 +313,74 @@ export class json {
      * json.stripUndefined({ a: 1, b: null, c: "" }); // { a: 1 }
      */
     public static stripUndefined(oSourceJson: object): object;
+    /**
+     * Parses JSON text without throwing.
+     *
+     * @public
+     * @static
+     * @param {unknown} vText - The text.
+     * @returns {any} The parsed value, `undefined` for a value that is not JSON text.
+     * @example
+     * json.tryParse('{"a":1}'); // { a: 1 }
+     * json.tryParse('nope');    // undefined
+     */
+    public static tryParse(vText: unknown): any;
+    /**
+     * Whether a value is a primitive (`string`, `number`, `boolean`, `null`, `undefined`) or a `Date`, i.e. a column
+     * value rather than an object or an array.
+     *
+     * @public
+     * @static
+     * @param {unknown} vValue - The value.
+     * @returns {boolean} `true` for a primitive or a date.
+     */
+    public static isPrimitive(vValue: unknown): boolean;
+    /**
+     * Flattens a nested object into one level of columns: nested keys are joined with `sSeparator`, arrays are JSON
+     * text, functions and other non-JSON values are dropped (the input is serialized first, so an `Error`'s own
+     * enumerable properties are kept, `Date`s become ISO strings).
+     *
+     * @public
+     * @static
+     * @param {unknown} vObject - The object, e.g. an error.
+     * @param {string} [sSeparator='_'] - Joins the path segments.
+     * @returns {Record<string, unknown>} The columns.
+     * @example
+     * json.toColumns({ message: 'Timeout', response: { status: 408, data: { code: 'T' } }, list: [1] });
+     * // { message: 'Timeout', response_status: 408, response_data_code: 'T', list: '[1]' }
+     */
+    public static toColumns(vObject: unknown, sSeparator?: string): Record<string, unknown>;
+    /**
+     * A readable label of a field name: the last segment of a dotted path, PascalCase / camelCase split into words.
+     *
+     * @public
+     * @static
+     * @param {string} sName - The field name.
+     * @returns {string} The label.
+     * @example
+     * json.label('Order.ShipToCity'); // 'Ship To City'
+     */
+    public static label(sName: string): string;
+    /**
+     * Metadata of rows of unknown shape: every field once (in the order found), its EDM type from its first value
+     * ({@link sap.edmType}) and a label.
+     *
+     * @public
+     * @static
+     * @param {object[]} aRows - The rows.
+     * @param {(sName: string) => string} [fLabel=json.label] - The label of a field, e.g. a translated text.
+     * @returns {{ properties: { name: string, type: string, label: string }[] }} The metadata.
+     * @example
+     * json.metadata([{ ID: 1, Name: 'A' }]);
+     * // { properties: [{ name: 'ID', type: 'Edm.Int32', label: 'I D' }, { name: 'Name', type: 'Edm.String', label: 'Name' }] }
+     */
+    public static metadata(aRows: object[], fLabel?: (sName: string) => string): {
+        properties: {
+            name: string;
+            type: string;
+            label: string;
+        }[];
+    };
 }
 /**
  * Array utility class providing operations for sorting, filtering, mapping, projecting,
@@ -247,17 +438,98 @@ export class array {
     /**
      * Keeps the first element per value of a property, e.g. one row per key when a backend answers an entry twice.
      * Elements without the property (`undefined` / `null`) are all kept: without a value there is nothing to compare.
-     * A value that is not an array is returned as is.
+     * A value that is not an array is returned as is. With `{ last: true }` the last element per value wins (e.g.
+     * rows of two reads merged, the later read wins); it keeps the position of the first one.
      *
      * @public
      * @static
      * @param {any[]} oArray - The array to deduplicate.
      * @param {string} sPropertyName - The property whose value identifies an element.
-     * @returns {any[]} A new array with the first element per property value.
+     * @param {{ last?: boolean }} [oOptions] - `last`: keep the last element per value instead of the first.
+     * @returns {any[]} A new array with one element per property value.
      * @example
      * array.uniqueBy([{ ID: 1, a: 1 }, { ID: 1, a: 2 }, { ID: 2 }], 'ID'); // [{ ID: 1, a: 1 }, { ID: 2 }]
+     * array.uniqueBy([{ ID: 1, a: 1 }, { ID: 1, a: 2 }, { ID: 2 }], 'ID', { last: true }); // [{ ID: 1, a: 2 }, { ID: 2 }]
      */
-    public static uniqueBy(oArray: any[], sPropertyName: string): any[];
+    public static uniqueBy(oArray: any[], sPropertyName: string, oOptions?: {
+        last?: boolean;
+    }): any[];
+    /**
+     * The elements of `aLeft` whose `sKey` value occurs in `aRight` (a semi-join, e.g. headers that have items).
+     *
+     * @public
+     * @static
+     * @param {any[]} aLeft - The elements to keep or drop.
+     * @param {any[]} aRight - The elements whose values count.
+     * @param {string} sKey - The property of `aLeft`.
+     * @param {string} [sRightKey=sKey] - The property of `aRight`.
+     * @returns {any[]} The matching elements of `aLeft`.
+     * @example
+     * array.semiJoin([{ ID: 1 }, { ID: 2 }], [{ ID: 2 }], 'ID'); // [{ ID: 2 }]
+     */
+    public static semiJoin(aLeft: any[], aRight: any[], sKey: string, sRightKey?: string): any[];
+    /**
+     * The best element per value of `sKey`: `fRank` gives each element a tuple, compared element by element (the first
+     * difference decides, higher is better); on a tie the earlier element stays. Elements without a value are dropped.
+     *
+     * @public
+     * @static
+     * @param {any[]} aRows - The elements.
+     * @param {string} sKey - The property that groups them.
+     * @param {(oRow: any) => (string|number|boolean)[]} fRank - The rank tuple of an element.
+     * @returns {any[]} One element per value, in the order the values were first found.
+     * @example
+     * array.bestBy([{ P: 'a', v: 1 }, { P: 'a', v: 3 }], 'P', (o) => [o.v]); // [{ P: 'a', v: 3 }]
+     */
+    public static bestBy(aRows: any[], sKey: string, fRank: (oRow: any) => any[]): any[];
+    /**
+     * Rows grouped per dimension values, the measures summed (a measure given as text, as OData V2 sends decimals,
+     * stays text). The first row of a group gives its other fields.
+     *
+     * @public
+     * @static
+     * @param {object[]} aRows - The rows.
+     * @param {string[]} aDimensions - The fields that group (compared as trimmed text).
+     * @param {string[]} aMeasures - The fields that are summed.
+     * @returns {object[]} One row per group, in the order the groups were first found.
+     * @example
+     * array.sumBy([{ D: 'a', M: '1.5' }, { D: 'a', M: '2' }], ['D'], ['M']); // [{ D: 'a', M: '3.5' }]
+     */
+    public static sumBy(aRows: object[], aDimensions: string[], aMeasures: string[]): object[];
+    /**
+     * Builds a tree from flat rows (e.g. the rows of a join): each level groups the rows by its `key`, takes its
+     * `fields` from the first row of the group and puts the next level into `children`.
+     *
+     * @public
+     * @static
+     * @param {object[]} aRows - The flat rows.
+     * @param {{ key: string, fields: string[] | Record<string, string>, children?: string }[]} aLevels - Top level first.
+     *   `fields`: the field names, or target name -> source field. `children`: the property of the next level (not on
+     *   the last level). A row without a value for a level's `key` gives no node on that level.
+     * @returns {object[]} The nodes of the top level.
+     * @example
+     * array.nest([{ H: 1, I: 'a' }, { H: 1, I: 'b' }], [{ key: 'H', fields: ['H'], children: 'Items' }, { key: 'I', fields: { Item: 'I' } }]);
+     * // [{ H: 1, Items: [{ Item: 'a' }, { Item: 'b' }] }]
+     */
+    public static nest(aRows: object[], aLevels: {
+        key: string;
+        fields: string[] | Record<string, string>;
+        children?: string;
+    }[]): object[];
+    /**
+     * Splits values into chunks so that `fBuild(chunk)` (e.g. a request URL) stays shorter than `iMaxLength`: as many
+     * values per chunk as fit into the first one.
+     *
+     * @public
+     * @static
+     * @param {any[]} aValues - The values.
+     * @param {(aChunk: any[]) => string} fBuild - Builds the text of a chunk.
+     * @param {number} iMaxLength - The text must be shorter than this.
+     * @returns {any[][]|undefined} The chunks (none for no values), `undefined` when not even one value fits.
+     * @example
+     * array.chunkByLength(['A', 'B', 'C'], (a) => `/x?in=${a.join(',')}`, 11); // [['A', 'B'], ['C']]
+     */
+    public static chunkByLength(aValues: any[], fBuild: (aChunk: any[]) => string, iMaxLength: number): any[][] | undefined;
     /**
      * Reorders the keys of each object in an array according to the specified key order.
      * If the input is a single object, delegates to {@link json.order}.
@@ -462,6 +734,101 @@ export class sap {
         decimal: string;
         thousand: string;
     };
+    /**
+     * The date format of an SAP user (`DateFormatCode`, SU01 "Date Format"): `1` DD.MM.YYYY, `2` MM/DD/YYYY,
+     * `3` MM-DD-YYYY, `4` YYYY.MM.DD, `5` YYYY/MM/DD, `6` YYYY-MM-DD (ISO), `7` GYY.MM.DD, `8` GYY/MM/DD, `9` GYY-MM-DD
+     * (`G` the Japanese era); any other code YYYY/MM/DD.
+     *
+     * @public
+     * @static
+     * @param {string|number} [vCode] - The date format code.
+     * @returns {string} The pattern.
+     * @example
+     * sap.dateFormat('1'); // 'DD.MM.YYYY'
+     */
+    public static dateFormat(vCode?: string | number | undefined): string;
+    /**
+     * The time format of an SAP user (`TimeFormatCode`, SU01 "Time Format"): `1` / `3` 12 hours with `AM` / `PM`,
+     * `2` / `4` 12 hours with `am` / `pm`; any other code (`0`) 24 hours.
+     *
+     * @public
+     * @static
+     * @param {string|number} [vCode] - The time format code.
+     * @returns {string} The pattern: `hh:mm:ss A`, `hh:mm:ss a` or `HH:mm:ss`.
+     * @example
+     * sap.timeFormat('2'); // 'hh:mm:ss a'
+     */
+    public static timeFormat(vCode?: string | number | undefined): string;
+    /**
+     * The OData EDM type of a value: a date string ({@link date.isDateString}) or a `Date` `Edm.DateTime`, an integer
+     * `Edm.Int32`, another number `Edm.Decimal`, a boolean `Edm.Boolean`, anything else `Edm.String`.
+     *
+     * @public
+     * @static
+     * @param {unknown} vValue - The value.
+     * @returns {string} The EDM type.
+     * @example
+     * sap.edmType(3.5); // 'Edm.Decimal'
+     */
+    public static edmType(vValue: unknown): string;
+}
+/**
+ * String helpers.
+ *
+ * @class
+ * @public
+ */
+export class string {
+    /**
+     * A regular expression of a wildcard pattern: `*` matches any text, every other character itself; the whole value
+     * must match.
+     *
+     * @public
+     * @static
+     * @param {string} sPattern - The pattern, e.g. `Z_*`.
+     * @returns {RegExp} The expression.
+     * @example
+     * string.wildcard('Z_*').test('Z_SALES'); // true
+     */
+    public static wildcard(sPattern: string): RegExp;
+    /**
+     * Whether a value matches one of the wildcard patterns ({@link string.wildcard}). No pattern is no restriction: every
+     * non-empty value matches. Patterns that are not strings are ignored.
+     *
+     * @public
+     * @static
+     * @param {string} sValue - The value.
+     * @param {unknown[]} [aPatterns=[]] - The patterns.
+     * @returns {boolean} `true` when it matches.
+     * @example
+     * string.matches('Z_SALES', ['Z_*', 'Y_*']); // true
+     */
+    public static matches(sValue: string, aPatterns?: unknown[]): boolean;
+}
+/**
+ * Function helpers.
+ *
+ * @class
+ * @public
+ */
+export class fn {
+    /**
+     * Wraps an async function so that it runs once: every call gets the same promise, also calls while the first one
+     * runs. A rejected run is forgotten, so the next call runs it again. `reset()` forgets a result.
+     *
+     * @public
+     * @static
+     * @template T
+     * @param {(...aArgs: any[]) => Promise<T>} fRun - The function; the arguments of the first call are used.
+     * @returns {((...aArgs: any[]) => Promise<T>) & { reset: () => void }} The wrapper.
+     * @example
+     * const exchangeRates = utils.fn.once(async () => loadExchangeRates());
+     * await exchangeRates(); // reads
+     * await exchangeRates(); // the same result
+     */
+    public static once<T>(fRun: (...aArgs: any[]) => Promise<T>): ((...aArgs: any[]) => Promise<T>) & {
+        reset: () => void;
+    };
 }
 /**
  * UUID handles UUID related API's.
@@ -504,14 +871,11 @@ export class UUID {
     tryConverse(oJsonData: object): string | undefined;
     /** Returns the fields encoded in the UUID when every field fits its format, else `undefined`. Unlike `inverse`, a
      * UUID of the right shape whose fields do not fit (or no UUID at all) gives no partial or empty object.
+     * @template {object} [T=Record<string, string>] - the key type of the application, e.g. `toKeys<OrderKey>(id)`
      * @param {string} sUUID - UUID representation of json data
-     * @returns {{CompanyCode: string, PersonWorkAgreementExternalID: string, TimeSheetRecord: string}|undefined} - the fields, or `undefined`
+     * @returns {T|undefined} - the key fields of the layout (field name -> value), or `undefined`
      */
-    toKeys(sUUID: string): {
-        CompanyCode: string;
-        PersonWorkAgreementExternalID: string;
-        TimeSheetRecord: string;
-    } | undefined;
+    toKeys<T extends unknown = Record<string, string>>(sUUID: string): T | undefined;
     /** Returns a Json Data representation of the input UUID
      * @returns {object} - Json Object that reperesents data generated from UUID
      * @param {string} sUUID - UUID representation of json data
