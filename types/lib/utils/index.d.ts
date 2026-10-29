@@ -845,6 +845,46 @@ export class UUID {
      */
     private static "__#private@#instance";
     /**
+     * Suffixes a PersonWorkAgreementExternalID may end with. The suffix is not written into the UUID: its position in
+     * this list is (see `#slots`). Append only: reordering or removing an entry changes what stored UUIDs decode to.
+     * No suffix may end another one.
+     *
+     * @private
+     * @static
+     */
+    private static "__#private@#suffixes";
+    /**
+     * The characters each marker slot of the UUID (the first character of its 2nd, 3rd and 4th group) may hold: any
+     * hex digit, the UUID version 1-8, the variant 8-b. Together they number 16 * 8 * 4 = 512 codes.
+     *
+     * @private
+     * @static
+     */
+    private static "__#private@#slotChars";
+    /**
+     * The code of the markers 2-4-8, which mean "no suffix" (every UUID made before the suffixes): 2 * 32 + 3 * 4 + 0.
+     *
+     * @private
+     * @static
+     */
+    private static "__#private@#noSuffix";
+    /**
+     * The three marker characters of a suffix: `''` gives 2-4-8, the n-th suffix of `#suffixes` the n-th code after it.
+     *
+     * @private
+     * @param {string} sSuffix - '' or an entry of `#suffixes`
+     * @returns {string[]} the characters of the three slots
+     */
+    private static "__#private@#slots";
+    /**
+     * The suffix the marker slots of a UUID stand for: '' for 2-4-8, `undefined` for markers of no suffix.
+     *
+     * @private
+     * @param {string} sUUID - a UUID string
+     * @returns {string|undefined} the suffix
+     */
+    private static "__#private@#suffixOf";
+    /**
      * Whether a value is a UUID string (RFC 9562, any version, also the nil and max UUID), e.g. an ID from a request.
      *
      * @public
